@@ -171,7 +171,7 @@ extension URL {
         // the file may use on disk. This includes metadata, compression (on file system
         // level) and block size.
         // In case totalFileAllocatedSize is unavailable we use the fallback value (excluding
-        // meta data and compression) This value should always be available.
+        // metadata and compression) This value should always be available.
         return UInt64(
             resourceValues.totalFileAllocatedSize
                 ?? resourceValues.fileAllocatedSize
