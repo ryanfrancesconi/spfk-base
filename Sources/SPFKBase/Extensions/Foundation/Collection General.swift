@@ -27,24 +27,39 @@ extension RangeReplaceableCollection where Iterator.Element: ExpressibleByIntege
 }
 
 extension Array where Element: Equatable {
-    public mutating func move(_ item: Element, to newIndex: Index) {
-        if let index = firstIndex(of: item), index != newIndex {
-            move(at: index, to: newIndex)
+    public mutating func move(element: Element, to newIndex: Index) throws {
+        guard !isEmpty else {
+            throw NSError(description: "Array is empty")
         }
+
+        guard let index = firstIndex(of: element) else {
+            throw NSError(description: "Didn't find \(element) in array")
+        }
+
+        guard index != newIndex else {
+            throw NSError(description: "\(element) is already at index \(newIndex)")
+        }
+
+        try move(index: index, to: newIndex)
     }
 
-    public mutating func bringToFront(item: Element) {
-        move(item, to: 0)
+    public mutating func move(index: Index, to newIndex: Index) throws {
+        guard indices.contains(index) else {
+            throw NSError(description: "Invalid index (\(index)) to move")
+        }
+
+        let element = remove(at: index)
+
+        let newIndex = newIndex.clamped(to: 0 ... count)
+
+        insert(element, at: newIndex)
     }
 
-    public mutating func sendToBack(item: Element) {
-        move(item, to: endIndex - 1)
+    public mutating func bringToFront(element: Element) throws {
+        try move(element: element, to: 0)
     }
-}
 
-extension Array {
-    // TODO: this may be buggy depending whether the index is before or after the index to move. it should be unit tested.
-    mutating func move(at index: Index, to newIndex: Index) {
-        insert(remove(at: index), at: newIndex)
+    public mutating func sendToBack(element: Element) throws {
+        try move(element: element, to: endIndex - 1)
     }
 }
