@@ -90,33 +90,17 @@ extension StringProtocol {
     /// - Optionally, you can allow duplicates or allow empty elements.
     /// - Omits elements starting with a null character.
     @_disfavoredOverload
-    public func splitDelimited(delimiter: String = ",",
-                               allowDuplicates: Bool = false,
-                               allowEmptyElements: Bool = false) -> [String]
-    {
-        let keywordArray = components(separatedBy: delimiter)
-        var out: [String] = []
+    public func splitDelimited(
+        delimiter: String = ",",
+        allowDuplicates: Bool = false
+    ) -> [String] {
+        var array = components(separatedBy: delimiter).map(\.trimmed)
 
-        for item in keywordArray {
-            let word: String = item.trimmed
+        array = array.filter(\.isNotEmpty)
 
-            guard word.first != "\0",
-                  !word.isEmpty || allowEmptyElements,
-                  !out.contains(word) || allowDuplicates else { continue }
-
-            out.append(word.trimmed)
-        }
-        return out
+        return allowDuplicates ? array : Array(Set(array))
     }
 }
-
-//extension StringProtocol {
-//    /// Convenience function to return a new string with whitespaces and newlines trimmed off start and end.
-//    @_disfavoredOverload
-//    public var trimmed: String {
-//        trimmingCharacters(in: .whitespacesAndNewlines)
-//    }
-//}
 
 extension StringProtocol {
     /// Convenience conversion
