@@ -98,7 +98,7 @@ extension StringProtocol {
 
         array = array.filter(\.isNotEmpty)
 
-        return allowDuplicates ? array : Array(Set(array))
+        return allowDuplicates ? array : array.localizedCaseInsensitiveRemovingDuplicates()
     }
 }
 
