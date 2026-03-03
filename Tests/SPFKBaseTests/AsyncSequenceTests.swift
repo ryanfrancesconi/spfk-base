@@ -1,6 +1,7 @@
 import Foundation
-@testable import SPFKBase
 import Testing
+
+@testable import SPFKBase
 
 @Suite("AsyncSequence Extensions")
 struct AsyncSequenceTests {
@@ -13,7 +14,7 @@ struct AsyncSequenceTests {
             continuation.finish()
         }
 
-        let result = try await stream.toArray()
+        let result = await stream.toArray()
         #expect(result == [1, 2, 3, 4, 5])
     }
 
@@ -23,7 +24,7 @@ struct AsyncSequenceTests {
             continuation.finish()
         }
 
-        let result = try await stream.toArray()
+        let result = await stream.toArray()
         #expect(result.isEmpty)
     }
 }
