@@ -3,14 +3,14 @@
 import Foundation
 
 extension FileManager {
-    public func modificationDateForFileAtPath(path: String) -> NSDate? {
+    public func modificationDateForFileAtPath(path: String) -> Date? {
         guard let attributes = try? attributesOfItem(atPath: path) else { return nil }
-        return attributes[.modificationDate] as? NSDate
+        return attributes[.modificationDate] as? Date
     }
 
-    public func creationDateForFileAtPath(path: String) -> NSDate? {
+    public func creationDateForFileAtPath(path: String) -> Date? {
         guard let attributes = try? attributesOfItem(atPath: path) else { return nil }
-        return attributes[.creationDate] as? NSDate
+        return attributes[.creationDate] as? Date
     }
 
     public func isInTrash(_ url: URL) -> Bool {

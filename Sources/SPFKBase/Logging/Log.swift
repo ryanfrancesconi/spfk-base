@@ -11,16 +11,9 @@ public enum Log {
 
     public static let defaultSubsystem: String = Bundle.main.bundleIdentifier ?? "com.spongefork"
 
-    @inline(__always)
     static let defaultLog = OSLog(subsystem: defaultSubsystem, category: "Info")
-
-    @inline(__always)
     static let debugLog = OSLog(subsystem: defaultSubsystem, category: "Debug")
-
-    @inline(__always)
     static let errorLog = OSLog(subsystem: defaultSubsystem, category: "Errors")
-
-    @inline(__always)
     static let poiLog = OSLog(subsystem: defaultSubsystem, category: "PointsOfInterest")
 
     @inline(__always)
