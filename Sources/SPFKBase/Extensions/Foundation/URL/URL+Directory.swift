@@ -80,7 +80,9 @@ extension URL {
 
     public static func queryString(items: [URLQueryItem]) -> String {
         items.compactMap {
-            "\($0.name)=\($0.value ?? "")"
+            let name = $0.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? $0.name
+            let value = ($0.value ?? "").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? $0.value ?? ""
+            return "\(name)=\(value)"
         }.joined(separator: "&")
     }
 }

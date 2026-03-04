@@ -83,7 +83,7 @@ extension URL {
 
     public var isAlias: Bool {
         guard let value = try? resourceValues(forKeys: [.isAliasFileKey, .isSymbolicLinkKey]) else { return false }
-        return value.isAliasFile == true
+        return value.isAliasFile == true || value.isSymbolicLink == true
     }
 
     public var isHidden: Bool {

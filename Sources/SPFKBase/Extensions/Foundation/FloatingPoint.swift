@@ -17,7 +17,8 @@ extension BinaryFloatingPoint {
 
 extension Array where Element: FloatingPoint {
     public func mean() -> Element {
-        reduce(0, +) / Element(count)
+        guard !isEmpty else { return 0 }
+        return reduce(0, +) / Element(count)
     }
 }
 
