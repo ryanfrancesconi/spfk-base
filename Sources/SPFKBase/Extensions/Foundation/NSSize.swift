@@ -6,4 +6,6 @@ extension CGSize {
     public var centerPoint: CGPoint {
         CGPoint(x: width / 2, y: height / 2)
     }
+
+    public static let one = CGSize(width: 1, height: 1)
 }
