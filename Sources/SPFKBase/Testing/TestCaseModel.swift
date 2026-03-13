@@ -2,6 +2,12 @@
 
 import Foundation
 
+/// Protocol for test case classes that need a temporary output directory and polling utilities.
+///
+/// Lives in SPFKBase (rather than SPFKTesting) because it depends on several SPFKBase types
+/// (`TypeDescribable`, `Log`, `URL.exists`, `URL.delete()`, `Task.sleep(seconds:)`,
+/// `NSError(description:)`). Keeping it here avoids adding an SPFKBase dependency to the
+/// otherwise lightweight SPFKTesting package, which is just bundled test resources and tags.
 public protocol TestCaseModel: TypeDescribable {
     var bin: URL { get }
     var deleteBinOnExit: Bool { get set }

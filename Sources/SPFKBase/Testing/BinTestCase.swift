@@ -1,7 +1,10 @@
 import Foundation
 
-/// Test case base to be used for Swift Testing where temp media files are needed.
+/// Test case base class for Swift Testing where temp media files are needed.
 /// All functionality is in `TestCaseModel`.
+///
+/// Lives in SPFKBase (rather than SPFKTesting) because `TestCaseModel` depends on
+/// SPFKBase utilities. See `TestCaseModel` for details.
 open class BinTestCase: TestCaseModel {
     /// Temp files will be written here
     public private(set) lazy var bin: URL = createBin()
