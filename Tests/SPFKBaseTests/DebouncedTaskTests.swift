@@ -1,6 +1,7 @@
 // Copyright Ryan Francesconi. All Rights Reserved.
 
 import Foundation
+import os
 import Testing
 
 @testable import SPFKBase
@@ -25,21 +26,22 @@ struct DebouncedTaskTests {
     @Test("later invocation cancels earlier")
     func laterCancelsEarlier() async throws {
         let task = DebouncedTask()
+        let firstCalled = OSAllocatedUnfairLock(initialState: false)
 
-        try await confirmation("first not called", expectedCount: 0) { firstExecuted in
-            try await confirmation("second called") { secondExecuted in
-                task.run(delay: 0.1) {
-                    firstExecuted()
-                }
-
-                // Immediately supersede with a second call
-                task.run(delay: 0.05) {
-                    secondExecuted()
-                }
-
-                try await Task.sleep(seconds: 0.2)
+        try await confirmation("second called") { secondExecuted in
+            task.run(delay: 0.2) {
+                firstCalled.withLock { $0 = true }
             }
+
+            // Immediately supersede with a second call
+            task.run(delay: 0.1) {
+                secondExecuted()
+            }
+
+            try await Task.sleep(seconds: 0.5)
         }
+
+        #expect(!firstCalled.withLock { $0 })
     }
 
     @Test("cancel prevents execution")
