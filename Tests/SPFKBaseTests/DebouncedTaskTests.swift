@@ -11,50 +11,50 @@ struct DebouncedTaskTests {
     @Test("immediate execution with zero delay")
     func immediateExecution() async throws {
         let task = DebouncedTask()
-        var executed = false
 
-        task.run {
-            executed = true
+        try await confirmation { executed in
+            task.run {
+                executed()
+            }
+
+            // Give the task a moment to complete
+            try await Task.sleep(seconds: 0.05)
         }
-
-        // Give the task a moment to complete
-        try await Task.sleep(seconds: 0.05)
-        #expect(executed)
     }
 
     @Test("later invocation cancels earlier")
     func laterCancelsEarlier() async throws {
         let task = DebouncedTask()
-        var firstExecuted = false
-        var secondExecuted = false
 
-        task.run(delay: 0.1) {
-            firstExecuted = true
+        try await confirmation("first not called", expectedCount: 0) { firstExecuted in
+            try await confirmation("second called") { secondExecuted in
+                task.run(delay: 0.1) {
+                    firstExecuted()
+                }
+
+                // Immediately supersede with a second call
+                task.run(delay: 0.05) {
+                    secondExecuted()
+                }
+
+                try await Task.sleep(seconds: 0.2)
+            }
         }
-
-        // Immediately supersede with a second call
-        task.run(delay: 0.05) {
-            secondExecuted = true
-        }
-
-        try await Task.sleep(seconds: 0.2)
-        #expect(!firstExecuted)
-        #expect(secondExecuted)
     }
 
     @Test("cancel prevents execution")
     func cancelPreventsExecution() async throws {
         let task = DebouncedTask()
-        var executed = false
 
-        task.run(delay: 0.1) {
-            executed = true
+        try await confirmation(expectedCount: 0) { executed in
+            task.run(delay: 0.1) {
+                executed()
+            }
+
+            task.cancel()
+
+            try await Task.sleep(seconds: 0.2)
         }
-
-        task.cancel()
-
-        try await Task.sleep(seconds: 0.2)
-        #expect(!executed)
     }
 
     @Test("isRunning reflects task state")
