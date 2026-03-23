@@ -2,7 +2,7 @@
 
 import CoreFoundation
 
-/// Namespace for Codable wrappers of CG* types which don't support secure coding (needed for SwiftData).
+/// Namespace for Codable wrappers of CG* types.
 public enum CG {
     public struct Rect: Codable, Sendable, Equatable, Hashable {
         public let x: CGFloat
@@ -34,33 +34,6 @@ public enum CG {
             y = cgRect.origin.y
             width = cgRect.width
             height = cgRect.height
-        }
-
-        // SwiftData may create an empty container for nil optional Rect values.
-        // Throw when all keys are missing so callers using try? get nil.
-        public init(from decoder: any Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            let decodedX = try container.decodeIfPresent(CGFloat.self, forKey: .x)
-            let decodedY = try container.decodeIfPresent(CGFloat.self, forKey: .y)
-            let decodedW = try container.decodeIfPresent(CGFloat.self, forKey: .width)
-            let decodedH = try container.decodeIfPresent(CGFloat.self, forKey: .height)
-
-            guard decodedX != nil || decodedY != nil || decodedW != nil || decodedH != nil else {
-                throw DecodingError.valueNotFound(
-                    CG.Rect.self,
-                    .init(codingPath: container.codingPath, debugDescription: "Empty container for optional CG.Rect")
-                )
-            }
-
-            x = decodedX ?? 0
-            y = decodedY ?? 0
-            width = decodedW ?? 0
-            height = decodedH ?? 0
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case x, y, width, height
         }
     }
 
