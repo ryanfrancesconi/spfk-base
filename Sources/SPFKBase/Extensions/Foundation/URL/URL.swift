@@ -1,5 +1,6 @@
 // Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi/spfk-utils
 
+import CryptoKit
 import Foundation
 
 extension URL {
@@ -64,7 +65,7 @@ extension URL {
     /// - Parameter childPath: the path to check
     /// - Returns: `true` or `false`
     public func contains(path childPath: String) -> Bool {
-        let path = isFileURL ? self.path : absoluteString
+        let path = isFileURL ? path : absoluteString
 
         return path.contains(childPath) || path == childPath
     }
@@ -86,7 +87,7 @@ extension URL {
     }
 }
 
-extension Array where Element == URL {
+extension [URL] {
     /// Returns URLs sorted by file name (lastPathComponent) alphabetically.
     /// Uses localized case-insensitive comparison.
     public func sortedByFileName() -> [URL] {
@@ -182,5 +183,12 @@ extension URL {
     public var fileSize: Int? {
         guard let value = try? resourceValues(forKeys: [.fileSizeKey]) else { return nil }
         return value.fileSize
+    }
+}
+
+extension URL {
+    public var sha256: String {
+        let digest = SHA256.hash(data: Data(absoluteString.utf8))
+        return digest.map { String(format: "%02x", $0) }.joined()
     }
 }
