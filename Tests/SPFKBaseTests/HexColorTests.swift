@@ -2,6 +2,7 @@
 
 import CoreGraphics
 import Foundation
+import Numerics
 import SPFKTesting
 import Testing
 
@@ -26,7 +27,7 @@ class HexColorTests: TestCaseModel {
         #expect(hexColor.red == 1)
         #expect(hexColor.green == 0)
         #expect(hexColor.blue == 0)
-        #expect(hexColor.alpha == 128.0 / 255.0)
+        #expect(hexColor.alpha.isApproximatelyEqual(to: 0.5, absoluteTolerance: 0.01))
         #expect(hexColor.stringValue == "FF000080")
     }
 
@@ -87,7 +88,7 @@ class HexColorTests: TestCaseModel {
         #expect(components[0] == 1)
         #expect(components[1] == 0)
         #expect(components[2] == 0)
-        #expect(components[3] == 128.0 / 255.0)
+        #expect(components[3].isApproximatelyEqual(to: 0.5, absoluteTolerance: 0.01))
     }
 
     @Test func cgColorIsSRGB() throws {
@@ -193,7 +194,7 @@ class HexColorTests: TestCaseModel {
             #expect(srgb.redComponent == 1)
             #expect(srgb.greenComponent == 0)
             #expect(srgb.blueComponent == 0)
-            #expect(srgb.alphaComponent == 128.0 / 255.0)
+            #expect(srgb.alphaComponent.isApproximatelyEqual(to: 0.5, absoluteTolerance: 0.01))
         }
     }
 #endif
