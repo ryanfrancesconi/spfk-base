@@ -75,13 +75,12 @@ public struct HexColor: Hashable, Sendable, Equatable, Comparable {
 
         let saturation = maxC > 0 ? delta / maxC : 0
 
-        var hue: CGFloat
-        if red == maxC {
-            hue = (green - blue) / delta
+        var hue: CGFloat = if red == maxC {
+            (green - blue) / delta
         } else if green == maxC {
-            hue = 2 + (blue - red) / delta
+            2 + (blue - red) / delta
         } else {
-            hue = 4 + (red - green) / delta
+            4 + (red - green) / delta
         }
 
         hue *= 60
