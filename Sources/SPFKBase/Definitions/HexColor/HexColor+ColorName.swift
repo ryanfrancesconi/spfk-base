@@ -34,7 +34,7 @@ public enum ColorName: String, CaseIterable, Sendable {
 
         // Desaturated colors
         if saturation < 0.15 {
-            self = brightness < 0.5 ? .black : .gray
+            self = .gray
             return
         }
 
@@ -76,9 +76,13 @@ extension HexColor {
         let (h, s, b) = hsb
 
         // Achromatic — no qualifier needed, the name itself implies lightness
-        if b < 0.15 { return "Black" }
+        if b < 0.05 { return "Black" }
         if s < 0.1, b > 0.85 { return "White" }
-        if s < 0.15 { return b < 0.5 ? "Black" : "Gray" }
+        if s < 0.15 {
+            if b < 0.4 { return "Dark Gray" }
+            if b < 0.65 { return "Gray" }
+            return "Light Gray"
+        }
 
         // For chromatic colors, derive the hue name directly so that
         // dark warm colors (which colorName classifies as "brown") get
