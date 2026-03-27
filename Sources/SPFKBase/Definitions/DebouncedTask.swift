@@ -8,6 +8,7 @@ import Foundation
 @MainActor
 public final class DebouncedTask {
     private var task: Task<Void, Never>?
+    private var currentID: UInt64 = 0
 
     public var isRunning: Bool { task != nil && task?.isCancelled == false }
 
@@ -17,11 +18,22 @@ public final class DebouncedTask {
     /// A non-zero `delay` inserts a sleep before execution; if `run`
     /// is called again during the sleep the earlier operation is cancelled.
     public func run(delay: TimeInterval = 0, operation: @escaping @Sendable () async throws -> Void) {
+        let effectiveDelay = task != nil ? delay : 0
         task?.cancel()
+        currentID &+= 1
+        let myID = currentID
         task = Task { [weak self] in
+            defer {
+                // Only clear the task reference if no newer task has been scheduled.
+                // Without this guard a cancelled task's cleanup would wipe the reference
+                // to its successor, making it untrackable and uncancellable.
+                if self?.currentID == myID {
+                    self?.task = nil
+                }
+            }
             do {
-                if delay > 0 {
-                    try await Task.sleep(seconds: delay)
+                if effectiveDelay > 0 {
+                    try await Task.sleep(seconds: effectiveDelay)
                 }
                 try Task.checkCancellation()
                 try await operation()
@@ -30,7 +42,6 @@ public final class DebouncedTask {
             } catch {
                 Log.error(error)
             }
-            self?.task = nil
         }
     }
 
