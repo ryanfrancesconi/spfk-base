@@ -6,24 +6,15 @@ import Foundation
 public enum BuildConfig: String, CustomStringConvertible, CaseIterable {
     case debug
     case beta
-    case publicBeta
     case release
-    case testing
 
     @inline(__always)
     public var description: String {
         switch self {
-        case .debug: return "DEBUG"
-        case .beta: return "BETA"
-        case .publicBeta: return "PUBLIC BETA"
-        case .release: return ""
-        case .testing: return "Testing only"
+        case .debug: "DEBUG"
+        case .beta: "BETA"
+        case .release: ""
         }
-    }
-
-    @inline(__always)
-    public var isInternal: Bool {
-        self == .debug || self == .beta || self == .testing
     }
 
     @inline(__always)
