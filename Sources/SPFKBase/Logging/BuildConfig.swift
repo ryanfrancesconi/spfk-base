@@ -11,9 +11,9 @@ public enum BuildConfig: String, CustomStringConvertible, CaseIterable {
     @inline(__always)
     public var description: String {
         switch self {
-        case .debug: "DEBUG"
-        case .beta: "BETA"
-        case .release: ""
+        case .debug: "Debug"
+        case .beta: "Beta"
+        case .release: "Release"
         }
     }
 
