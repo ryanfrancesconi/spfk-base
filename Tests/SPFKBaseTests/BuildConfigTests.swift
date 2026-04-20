@@ -6,9 +6,9 @@ import Testing
 struct BuildConfigTests {
     @Test("description values")
     func description() {
-        #expect(BuildConfig.debug.description == "DEBUG")
-        #expect(BuildConfig.beta.description == "BETA")
-        #expect(BuildConfig.release.description == "")
+        #expect(BuildConfig.debug.description == "Debug")
+        #expect(BuildConfig.beta.description == "Beta")
+        #expect(BuildConfig.release.description == "Release")
     }
 
     @Test("isBeta is true for everything except release")
