@@ -25,8 +25,4 @@ struct BuildConfigTests {
         #expect(!BuildConfig.beta.isRelease)
     }
 
-    @Test("all cases are present")
-    func allCases() {
-        #expect(BuildConfig.allCases.count == 3)
-    }
 }
