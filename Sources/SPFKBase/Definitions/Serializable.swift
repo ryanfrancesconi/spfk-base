@@ -26,6 +26,17 @@ extension SerializableEncoder {
         dataRepresentation?.base64EncodedString()
     }
 
+    public var jsonRepresentation: String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+
+        guard let data = try? encoder.encode(self) else {
+            return nil
+        }
+
+        return String(data: data, encoding: .utf8)
+    }
+
     public var plistRepresentation: String? {
         let encoder = PropertyListEncoder()
         encoder.outputFormat = .xml
@@ -45,6 +56,14 @@ extension SerializableDecoder {
         }
 
         try self.init(data: data)
+    }
+
+    public init(json string: String) throws {
+        guard let data = string.data(using: .utf8) else {
+            throw NSError(description: "Failed to parse json \(string)")
+        }
+
+        self = try JSONDecoder().decode(Self.self, from: data)
     }
 
     public init(plist string: String) throws {

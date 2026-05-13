@@ -6,14 +6,14 @@
 
     extension Serializable {
         public func toPasteboard() throws {
-            guard let plistRepresentation else {
-                throw NSError(description: "Failed to convert \(self) to plist")
+            guard let jsonRepresentation else {
+                throw NSError(description: "Failed to convert \(self) to JSON")
             }
 
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.declareTypes([.string], owner: nil)
-            pasteboard.setString(plistRepresentation, forType: .string)
+            pasteboard.setString(jsonRepresentation, forType: .string)
         }
 
         public static func fromPasteboard<T: Serializable>() throws -> T {
@@ -23,7 +23,7 @@
                 throw NSError(description: "Invalid pasteboard contents, must be .string")
             }
 
-            return try T(plist: string)
+            return try T(json: string)
         }
     }
 
