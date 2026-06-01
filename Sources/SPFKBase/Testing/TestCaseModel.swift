@@ -60,7 +60,13 @@ extension TestCaseModel {
         }
     }
 
-    private func copy(to bin: URL, url input: URL) throws -> URL {
+    public func copy(to bin: URL, urls: [URL]) throws -> [URL] {
+        urls.compactMap {
+            try? copy(to: bin, url: $0)
+        }
+    }
+
+    public func copy(to bin: URL, url input: URL) throws -> URL {
         let tmp = bin.appendingPathComponent(input.lastPathComponent)
         try? FileManager.default.removeItem(at: tmp)
         try FileManager.default.copyItem(at: input, to: tmp)
