@@ -5,6 +5,7 @@ import SwiftExtensions
 
 extension String {
     public static let nbsp: String = "\u{00A0}"
+    public static let ellipse: String = "\u{2026}"
 }
 
 extension String {
