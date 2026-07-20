@@ -1,3 +1,5 @@
+// Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi/spfk-base
+
 import Foundation
 
 /// Test case base class for Swift Testing where temp media files are needed.
