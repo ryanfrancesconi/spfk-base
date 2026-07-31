@@ -60,6 +60,28 @@ extension String {
         .capitalized // If input is in camelCase
     }
 
+    /// Splits a `snake_case` identifier into its component words.
+    ///
+    /// Vision and SoundAnalysis both emit `snake_case` classification identifiers
+    /// (`toaster_oven`, `dog_bark`). Whitespace counts as a separator too, so an identifier
+    /// that has already been converted to spaced form decomposes the same way rather than
+    /// coming back as a single word.
+    ///
+    /// E.g., `"toaster_oven"` → `["toaster", "oven"]`
+    public var snakeCaseWords: [String] {
+        split(whereSeparator: { $0 == "_" || $0.isWhitespace }).map(String.init)
+    }
+
+    /// Converts a `snake_case` identifier to title-cased display form.
+    ///
+    /// E.g., `"toaster_oven"` → `"Toaster Oven"`, `"dog_bark"` → `"Dog Bark"`
+    ///
+    /// Title casing applies the same particle rules as ``titleCased``, so
+    /// `"bird_of_prey"` → `"Bird of Prey"`.
+    public var snakeCaseToTitle: String {
+        snakeCaseWords.joined(separator: " ").titleCased
+    }
+
     /// Converts an ALL-CAPS string to title-cased display form, preserving hyphens and spaces.
     /// E.g., `"AIR-BLOW"` → `"Air-Blow"`, `"FOOD & DRINK"` → `"Food & Drink"`
     public var displayTitleCased: String {

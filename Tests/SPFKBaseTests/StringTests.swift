@@ -36,6 +36,36 @@ struct StringTests {
         #expect("helloWorld".spacedTitleCased == "Hello World")
     }
 
+    @Test("snakeCaseWords splits identifiers into component words")
+    func snakeCaseWords() {
+        #expect("toaster_oven".snakeCaseWords == ["toaster", "oven"])
+        #expect("bicycle".snakeCaseWords == ["bicycle"])
+        #expect("".snakeCaseWords == [])
+
+        // Whitespace separates too, so an already-spaced identifier decomposes the same way
+        // rather than coming back as one word.
+        #expect("toaster oven".snakeCaseWords == ["toaster", "oven"])
+
+        // Repeated and edge separators must not yield empty words -- those would become
+        // doubled spaces once rejoined.
+        #expect("__toaster__oven__".snakeCaseWords == ["toaster", "oven"])
+    }
+
+    @Test("snakeCaseToTitle converts identifiers to display form")
+    func snakeCaseToTitle() {
+        #expect("toaster_oven".snakeCaseToTitle == "Toaster Oven")
+        #expect("dog_bark".snakeCaseToTitle == "Dog Bark")
+        #expect("bicycle".snakeCaseToTitle == "Bicycle")
+        #expect("".snakeCaseToTitle == "")
+
+        // Inherits titleCased's particle rules: a particle between the first and last word
+        // stays lowercase.
+        #expect("bird_of_prey".snakeCaseToTitle == "Bird of Prey")
+
+        // Edge separators must not survive as doubled spaces.
+        #expect("__toaster__oven__".snakeCaseToTitle == "Toaster Oven")
+    }
+
     // MARK: - Comparison
 
     @Test("equalsIgnoringCase works")
