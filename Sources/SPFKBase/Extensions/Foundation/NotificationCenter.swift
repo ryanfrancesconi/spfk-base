@@ -30,7 +30,7 @@ extension NotificationCenter {
             if let timeout {
                 taskGroup.addTask {
                     try await Task.sleep(seconds: timeout)
-                    print("* Test timed out")
+                    Log.error("* Test timed out")
                     return SendableNotification(nil)
                 }
             }
