@@ -49,4 +49,21 @@ public final class DebouncedTask {
         task?.cancel()
         task = nil
     }
+
+    /// Cancels the scheduled operation and waits for it to actually end.
+    ///
+    /// ``cancel()`` only requests cancellation and then drops the handle, so an operation already
+    /// inside a synchronous read keeps running with nothing left to await. Anything reclaiming a
+    /// resource the operation touches has to use this instead.
+    public func finish() async {
+        let inFlight = task
+        let inFlightID = currentID
+        inFlight?.cancel()
+        await inFlight?.value
+
+        // As in `run`'s defer: leave a task scheduled while this one was ending alone.
+        if currentID == inFlightID {
+            task = nil
+        }
+    }
 }
