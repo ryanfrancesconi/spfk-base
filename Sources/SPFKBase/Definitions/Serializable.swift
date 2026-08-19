@@ -3,7 +3,18 @@
 import Foundation
 
 /// Convenience protocol for property list data
-public protocol Serializable: SerializableEncoder, SerializableDecoder, Sendable {}
+public protocol Serializable: SerializableEncoder, SerializableDecoder, Sendable {
+    /// Names this payload on the pasteboard, so a reader can tell one JSON document from another.
+    ///
+    /// A real requirement rather than only a defaulted extension member: a generic read dispatches
+    /// through the witness table, where an override written in a constrained extension compiles
+    /// and is silently ignored.
+    static var pasteboardTypeName: String { get }
+}
+
+extension Serializable {
+    public static var pasteboardTypeName: String { "\(Self.self)" }
+}
 
 public protocol SerializableEncoder: Encodable {}
 public protocol SerializableDecoder: Decodable {}
