@@ -30,6 +30,29 @@ Bridges Objective-C `@try`/`@catch` exception handling into Swift through the `S
 - **`FloatChannelData`** -- A multi-channel floating-point buffer backed by `UnsafeMutablePointer<UnsafeMutablePointer<Float>?>`, used for interleaved/deinterleaved audio data.
 - **`UnitInterval`** -- A type-safe wrapper constraining floating-point values to the 0...1 range.
 - **`Benchmark`** -- A simple start/stop timer for measuring execution duration of code blocks.
+- **`HexColor`** -- A Codable color serializing as an 8-character RGBA hex string. Equality and hashing rest on that string alone, so every construction path behaves the same. Bridges to `CGColor`, with `NSColor` conversion on macOS.
+- **`ColorName`** -- Named colors a `HexColor` can be built from.
+- **`CG`** -- Namespace for Codable wrappers of the CoreGraphics value types.
+- **`TrimDescription`** -- An in/out trim window over a media file or region. It lives here rather than with the audio edit types that first used it: it is two time values and their invariants, with nothing audio-specific about it, and video and image work needs the same thing without depending on audio.
+- **`Serializable`** -- Property-list encoding and decoding, plus the pasteboard round-trip built on it.
+- **`DebouncedTask`** -- Cancels a previously scheduled operation before starting a new one, optionally after a delay, for coalescing rapid user actions.
+- **`SendableNotification`** -- A notification carried across isolation.
+
+### Parsing and import
+
+- **`ParseProgressAccess`** -- Start, per-item update and finish, with no coupling to a presentation. `ModalProgressAccess` conformers in `SPFKUI` satisfy it for free.
+- **`ParseStopSignal`** -- Stopping a parse pass cooperatively rather than by cancellation.
+- **`SequentialPCMSource`** -- A sequential source of decoded PCM for audio `AVAudioFile` cannot open — Matroska, chiefly, where `AVAudioFile(forReading:)` throws and no amount of retrying helps.
+
+Cancellation is the wrong tool for stopping a parse: reading a file's video track reaches
+`AVAsset.load`, and cancelling mid-load leaks the continuation behind it — one per in-flight file, a
+task suspended forever. Stopping cooperatively costs at most one batch of already-started files and
+leaves no torn-down loads behind. The signal is lock-guarded rather than an actor so that `stop()`
+takes effect *synchronously*: as an actor it had to hop through a `Task` to set the flag, and a
+folder small enough to finish inside that hop imported anyway despite the user pressing Cancel.
+
+`SequentialPCMSource` is sequential with no seek, deliberately — that keeps a conforming type free
+to stream, so a two-hour film's audio never has to exist in memory at once.
 
 ### Extensions
 
