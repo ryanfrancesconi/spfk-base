@@ -187,8 +187,26 @@ extension URL {
 }
 
 extension URL {
+    /// Lowercase hex SHA-256 of ``absoluteString``.
+    ///
+    /// **This value is an on-disk filename** in `BookmarkDataStore`, `ImageDataStore`,
+    /// `WaveformDataStore` and `VideoFrameDataStore`, so its output can never change -- every cached
+    /// entry is addressed by it. `URLSHA256Tests` pins the encoding against fixed vectors.
+    ///
+    /// Hex is built through a lookup table rather than `String(format: "%02x")`: the formatter is
+    /// called once per byte and dominates, measured 2026-09-04 at 273 ms against 8.7 ms for 10,000
+    /// URLs (`swiftc -O`). `resolveBookmarks` derives one per element on every playlist read.
     public var sha256: String {
-        let digest = SHA256.hash(data: Data(absoluteString.utf8))
-        return digest.map { String(format: "%02x", $0) }.joined()
+        var out = [UInt8]()
+        out.reserveCapacity(SHA256.byteCount * 2)
+
+        for byte in SHA256.hash(data: Data(absoluteString.utf8)) {
+            out.append(Self.hexDigits[Int(byte >> 4)])
+            out.append(Self.hexDigits[Int(byte & 0x0F)])
+        }
+
+        return String(decoding: out, as: UTF8.self)
     }
+
+    private static let hexDigits: [UInt8] = Array("0123456789abcdef".utf8)
 }
