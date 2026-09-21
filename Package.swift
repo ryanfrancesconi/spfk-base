@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/orchetect/swift-extensions", from: "2.0.0"),
         .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.3.0"),
-        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.1.1"),
+        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.1.5"),
     ],
     targets: [
         .target(
