@@ -132,4 +132,20 @@ struct StringTests {
         #expect(allowed.isSuperset(of: .alphanumerics))
         #expect("-._~".unicodeScalars.allSatisfy { allowed.contains($0) })
     }
+
+    // MARK: - Ellipsis
+
+    /// German sets a trailing ellipsis off with a no-break space, as macOS does; nothing else does.
+    @Test(arguments: [("de", "\u{00A0}\u{2026}"), ("de-CH", "\u{00A0}\u{2026}"), ("en", "\u{2026}"), ("fr", "\u{2026}"), ("ja", "\u{2026}"), (nil, "\u{2026}")])
+    func ellipsisFollowsTheLocalization(localization: String?, expected: String) {
+        #expect(String.ellipse(forLocalization: localization) == expected)
+    }
+
+    /// Either form is recognized and removed whole, so a German title is never left with a
+    /// dangling no-break space or given a second ellipsis.
+    @Test(arguments: [("Sichern\u{00A0}\u{2026}", "Sichern"), ("Save\u{2026}", "Save"), ("Save", "Save"), ("A\u{00A0}B", "A\u{00A0}B")])
+    func droppingTrailingEllipsisRemovesEitherForm(title: String, plain: String) {
+        #expect(title.droppingTrailingEllipsis == plain)
+        #expect(title.hasTrailingEllipsis == (title != plain))
+    }
 }

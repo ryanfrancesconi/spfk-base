@@ -1,11 +1,32 @@
 // Copyright Ryan Francesconi. All Rights Reserved. Revision History at https://github.com/ryanfrancesconi/spfk-base
 
 import AudioToolbox
+import Foundation
 import SwiftExtensions
 
 extension String {
     public static let nbsp: String = "\u{00A0}"
-    public static let ellipse: String = "\u{2026}"
+
+    /// A trailing ellipsis in the app's own language. German sets it off with a no-break space,
+    /// as macOS does ("Sichern\u{00A0}…"); every other language attaches it.
+    public static let ellipse: String = ellipse(forLocalization: Bundle.main.preferredLocalizations.first)
+
+    static func ellipse(forLocalization localization: String?) -> String {
+        localization?.hasPrefix("de") == true ? nbsp + "\u{2026}" : "\u{2026}"
+    }
+
+    /// True when the string ends in an ellipsis, in either form.
+    public var hasTrailingEllipsis: Bool {
+        hasSuffix("\u{2026}")
+    }
+
+    /// The string without a trailing ellipsis and the no-break space German puts before one.
+    public var droppingTrailingEllipsis: String {
+        guard hasTrailingEllipsis else { return self }
+        var result = dropLast()
+        if result.last == "\u{00A0}" { result = result.dropLast() }
+        return String(result)
+    }
 }
 
 extension String {
