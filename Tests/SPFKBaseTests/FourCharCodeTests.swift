@@ -11,9 +11,6 @@ class FourCharCodeTests: TestCaseModel {
         
         let rhombus = "\(FourCharCode.rhombus)\(FourCharCode.rhombus)\(FourCharCode.rhombus)\(FourCharCode.rhombus)"
         
-        // ����
-        Log.debug(rhombus)
-        
         #expect(rhombus.fourCC == 3186606013)
         #expect(FourCharCode(3186606013).fourCC == "????")
         

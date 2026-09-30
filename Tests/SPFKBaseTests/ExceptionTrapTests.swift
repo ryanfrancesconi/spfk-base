@@ -9,7 +9,6 @@ class ExceptionTrapTests: TestCaseModel {
 
     class Object {
         init() {}
-        deinit { Log.debug("- { \(self) }") }
 
         func throwError() throws {
             throw NSError(description: #function)

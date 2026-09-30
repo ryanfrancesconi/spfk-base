@@ -5,9 +5,6 @@ struct SPFKBaseTests {
     @Test func typeDescribeable() {
         class MyClass: TypeDescribable {
             init() {}
-            deinit {
-                Log.debug("- { \(typeName) }")
-            }
         }
 
         var myStruct: MyClass? = MyClass()
