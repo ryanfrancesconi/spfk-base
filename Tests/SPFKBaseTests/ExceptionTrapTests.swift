@@ -25,8 +25,6 @@ class ExceptionTrapTests: TestCaseModel {
     }
 
     @Test func swiftErrorWithSelf() async throws {
-//        try await wait(sec: 4)
-
         Log.signpost(.begin, name: "throwError")
         #expect(throws: Error.self) {
             try ExceptionTrap.withThrowing { [weak self] in
@@ -36,8 +34,6 @@ class ExceptionTrapTests: TestCaseModel {
 
         object = nil
         Log.signpost(.end, name: "throwError")
-
-//        try await wait(sec: 4)
     }
 
     @Test func nsError() async throws {
@@ -58,8 +54,6 @@ class ExceptionTrapTests: TestCaseModel {
     }
 
     @Test func noError() async throws {
-        // try await wait(sec: 4)
-
         Log.signpost(.begin, name: "throwError")
 
         try ExceptionTrap.withThrowing { [weak self] in
