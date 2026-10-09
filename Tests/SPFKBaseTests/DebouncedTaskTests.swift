@@ -104,7 +104,7 @@ struct DebouncedTaskTests {
 
 // MARK: - Superseded operations
 
-/// An operation that cannot be stopped once inside it, as a synchronous read cannot.
+/// A gate an operation waits on without observing cancellation, as a synchronous read does.
 private final class Latch: Sendable {
     private let state = OSAllocatedUnfairLock<(isOpen: Bool, waiters: [CheckedContinuation<Void, Never>])>(
         initialState: (false, [])
