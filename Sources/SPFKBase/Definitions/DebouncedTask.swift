@@ -2,13 +2,13 @@
 
 import Foundation
 
-/// Cancels any previously scheduled operation before starting a new one,
-/// optionally after a delay. Useful for coalescing rapid user actions
-/// (e.g., debounced search, delayed load after selection change).
+/// Runs one operation at a time, optionally after a delay, for coalescing rapid user actions
+/// (a debounced search, a delayed load after a selection change).
 ///
-/// Operations never overlap: a superseded operation is cancelled, and its successor starts only once
-/// it has ended. Cancellation is observed only at the operation's own checks, so one written to
-/// stop early should check `Task.isCancelled` after each suspension before it writes anything.
+/// A new operation cancels the one before it and starts only once that one has ended, so
+/// operations never overlap. Cancellation is observed only at the operation's own checks, so one
+/// written to stop early should check `Task.isCancelled` after each suspension before it writes
+/// anything.
 @MainActor
 public final class DebouncedTask {
     private var task: Task<Void, Never>?
