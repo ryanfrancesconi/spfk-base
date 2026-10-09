@@ -5,6 +5,10 @@ import Foundation
 /// Cancels any previously scheduled operation before starting a new one,
 /// optionally after a delay. Useful for coalescing rapid user actions
 /// (e.g., debounced search, delayed load after selection change).
+///
+/// Operations never overlap: a superseded operation is cancelled, and its successor starts only once
+/// it has ended. Cancellation is observed only at the operation's own checks, so one written to
+/// stop early should check `Task.isCancelled` after each suspension before it writes anything.
 @MainActor
 public final class DebouncedTask {
     private var task: Task<Void, Never>?
@@ -17,9 +21,11 @@ public final class DebouncedTask {
     /// Cancel the previous operation (if any) and schedule a new one.
     /// A non-zero `delay` inserts a sleep before execution; if `run`
     /// is called again during the sleep the earlier operation is cancelled.
+    /// The delay runs alongside the predecessor's wind-down rather than after it.
     public func run(delay: TimeInterval = 0, operation: @escaping @Sendable () async throws -> Void) {
-        let effectiveDelay = task != nil ? delay : 0
-        task?.cancel()
+        let predecessor = task
+        let effectiveDelay = predecessor != nil ? delay : 0
+        predecessor?.cancel()
         currentID &+= 1
         let myID = currentID
         task = Task { [weak self] in
@@ -31,10 +37,17 @@ public final class DebouncedTask {
                     self?.task = nil
                 }
             }
+
+            if effectiveDelay > 0 {
+                // Returns early when superseded; the predecessor is still awaited below.
+                try? await Task.sleep(seconds: effectiveDelay)
+            }
+
+            // Awaited even when cancelled, so each task ends after the one before it and awaiting
+            // the latest awaits them all.
+            await predecessor?.value
+
             do {
-                if effectiveDelay > 0 {
-                    try await Task.sleep(seconds: effectiveDelay)
-                }
                 try Task.checkCancellation()
                 try await operation()
             } catch is CancellationError {
@@ -45,16 +58,16 @@ public final class DebouncedTask {
         }
     }
 
+    /// Cancels the scheduled operation without waiting for it. The handle is kept, so the next
+    /// ``run(delay:operation:)`` still starts only once this one has ended.
     public func cancel() {
         task?.cancel()
-        task = nil
     }
 
-    /// Cancels the scheduled operation and waits for it to actually end.
+    /// Cancels the scheduled operation and waits for it, and every operation it superseded, to end.
     ///
-    /// ``cancel()`` only requests cancellation and then drops the handle, so an operation already
-    /// inside a synchronous read keeps running with nothing left to await. Anything reclaiming a
-    /// resource the operation touches has to use this instead.
+    /// Anything reclaiming a resource the operation touches has to use this rather than
+    /// ``cancel()``, since an operation already inside a synchronous read keeps running.
     public func finish() async {
         let inFlight = task
         let inFlightID = currentID
