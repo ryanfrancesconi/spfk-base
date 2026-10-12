@@ -16,7 +16,9 @@ public struct PhaseTrace {
     private let start: TimeInterval
     private var previous: TimeInterval
 
-    public init(_ label: String) {
+    /// - Parameter label: the prefix every mark is logged under. The default is the playlist and
+    ///   album load path's, so one search finds all of it.
+    public init(_ label: String = "LOADTRACE") {
         self.label = label
         start = ProcessInfo.processInfo.systemUptime
         previous = start
