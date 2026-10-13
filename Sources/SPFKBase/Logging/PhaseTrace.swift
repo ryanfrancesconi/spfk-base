@@ -35,10 +35,11 @@ public struct PhaseTrace {
 
         guard Self.isEnabled else { return }
 
+        // `@` is system uptime, so marks from separate traces can be ordered against each other.
         Log.default(
             file: file, function: function, line: line,
-            String(format: "%@ %@ %.0f ms (total %.0f ms)",
-                   label, step(), (now - previous) * 1000, (now - start) * 1000)
+            String(format: "%@ %@ %.0f ms (total %.0f ms) @%.3f",
+                   label, step(), (now - previous) * 1000, (now - start) * 1000, now)
         )
     }
 }
