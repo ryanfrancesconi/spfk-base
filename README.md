@@ -37,6 +37,7 @@ Bridges Objective-C `@try`/`@catch` exception handling into Swift through the `S
 - **`Serializable`** -- Property-list encoding and decoding, plus the pasteboard round-trip built on it.
 - **`DebouncedTask`** -- Cancels a previously scheduled operation before starting a new one, optionally after a delay, for coalescing rapid user actions.
 - **`SendableNotification`** -- A notification carried across isolation.
+- **`ProcessRunner`** (macOS) -- Runs a child process to its exit without blocking a thread, on [swift-subprocess](https://github.com/swiftlang/swift-subprocess): stdout and stderr collected separately, a deadline, and cancellation that ends the child's whole process group, SIGTERM then SIGKILL. Returns a `ProcessOutput` whether the process exited, was signaled or timed out; throws only when it cannot start or a stream passes `outputLimit`. **`NSApplication.launchRelaunchHelper` (spfk-utils) deliberately stays on Foundation's `Process`**: its child must outlive the app, and every Subprocess `run` awaits its child and tears it down when the caller goes away. That is an exception, not an unfinished migration.
 
 ### Parsing and import
 
@@ -110,6 +111,7 @@ to stream, so a two-hour film's audio never has to exist in memory at once.
 - [swift-numerics](https://github.com/apple/swift-numerics)
 - [swift-collections](https://github.com/apple/swift-collections)
 - [swift-async-algorithms](https://github.com/apple/swift-async-algorithms)
+- [swift-subprocess](https://github.com/swiftlang/swift-subprocess) (macOS only)
 - [spfk-testing](https://github.com/ryanfrancesconi/spfk-testing) (test target only)
 
 ## Installation

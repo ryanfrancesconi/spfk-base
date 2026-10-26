@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.3.0"),
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.1.5"),
+        .package(url: "https://github.com/swiftlang/swift-subprocess", from: "1.0.2"),
     ],
     targets: [
         .target(
@@ -29,6 +30,7 @@ let package = Package(
                 .product(name: "Numerics", package: "swift-numerics"),
                 .product(name: "Collections", package: "swift-collections"),
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
+                .product(name: "Subprocess", package: "swift-subprocess", condition: .when(platforms: [.macOS])),
             ]
         ),
         .target(
