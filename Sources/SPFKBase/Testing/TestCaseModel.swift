@@ -101,9 +101,10 @@ extension TestCaseModel {
     }
 
     public func wait(
-        for condition: @escaping @autoclosure () -> Bool,
+        for condition: @autoclosure () -> Bool,
         timeout: TimeInterval,
-        polling: TimeInterval = 0.1
+        polling: TimeInterval = 0.1,
+        isolation: isolated (any Actor)? = #isolation
     ) async throws {
         let inTime = Date()
         let timeoutTime = inTime + timeout
@@ -116,7 +117,7 @@ extension TestCaseModel {
                 break
             }
 
-            try await wait(sec: polling)
+            try await Task.sleep(seconds: polling)
 
             let result = condition()
 
