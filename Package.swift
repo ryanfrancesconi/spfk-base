@@ -36,13 +36,7 @@ let package = Package(
         .target(
             name: "SPFKBaseC",
             dependencies: [],
-            publicHeadersPath: "include",
-            cSettings: [
-                .headerSearchPath("include_private")
-            ],
-            cxxSettings: [
-                .headerSearchPath("include_private")
-            ]
+            publicHeadersPath: "include"
         ),
         .testTarget(
             name: "SPFKBaseTests",
