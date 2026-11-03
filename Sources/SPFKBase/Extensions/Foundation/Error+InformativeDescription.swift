@@ -17,4 +17,19 @@ extension Error {
         guard !description.isEmpty, !description.hasSuffix(" error \(error.code).)") else { return nil }
         return description
     }
+
+    /// `headline` followed by what the error says: its description on the next line, or only the
+    /// parenthesized domain and code when the description is Foundation's fallback.
+    public func message(headline: String) -> String {
+        if let informativeDescription {
+            return headline + "\n" + informativeDescription
+        }
+
+        let description = (self as NSError).localizedDescription
+
+        guard let open = description.lastIndex(of: "(") else { return headline }
+
+        let code = description[open...].trimmingCharacters(in: CharacterSet(charactersIn: "().").union(.whitespaces))
+        return "\(headline) (\(code))"
+    }
 }

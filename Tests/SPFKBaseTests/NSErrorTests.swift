@@ -55,4 +55,20 @@ struct NSErrorTests {
         #expect(DescribedError.failed.informativeDescription == "the file is gone")
         #expect(CocoaError(.fileNoSuchFile).informativeDescription != nil)
     }
+
+    @Test("message(headline:) puts a real description on the next line")
+    func messageWithDescription() {
+        let error = NSError(description: "No audio could be decoded")
+        #expect(error.message(headline: "Couldn't reverse kick.wav") == "Couldn't reverse kick.wav\nNo audio could be decoded")
+    }
+
+    @Test("message(headline:) keeps only the domain and code from the fallback")
+    func messageWithFallback() {
+        let error = NSError(domain: NSOSStatusErrorDomain, code: -39)
+        #expect(error.message(headline: "Couldn't reverse kick.wav") == "Couldn't reverse kick.wav (OSStatus error -39)")
+
+        let undescribed = UndescribedError.failed.message(headline: "Couldn't load kick.wav")
+        #expect(undescribed.hasPrefix("Couldn't load kick.wav ("))
+        #expect(undescribed.hasSuffix("UndescribedError error 0)"))
+    }
 }
