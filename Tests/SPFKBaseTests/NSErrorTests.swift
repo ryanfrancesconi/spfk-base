@@ -31,4 +31,28 @@ struct NSErrorTests {
         #expect(error.localizedDescription.contains("doSomething()"))
         #expect(error.localizedDescription.contains("it broke"))
     }
+
+    // MARK: - informativeDescription
+
+    private enum UndescribedError: Error { case failed }
+
+    private enum DescribedError: LocalizedError {
+        case failed
+        var errorDescription: String? { "the file is gone" }
+    }
+
+    @Test("informativeDescription is nil for Foundation's domain-and-code fallback")
+    func informativeDescriptionNilForFallback() {
+        #expect(NSError(domain: NSOSStatusErrorDomain, code: -39).informativeDescription == nil)
+        #expect(NSError(domain: "com.apple.coreaudio.avfaudio", code: 2_003_334_207).informativeDescription == nil)
+        // The shape `_GenericObjCError` bridges to: a Swift error type with no description.
+        #expect(UndescribedError.failed.informativeDescription == nil)
+    }
+
+    @Test("informativeDescription keeps a real description")
+    func informativeDescriptionKeepsRealDescription() {
+        #expect(NSError(description: "something failed").informativeDescription == "something failed")
+        #expect(DescribedError.failed.informativeDescription == "the file is gone")
+        #expect(CocoaError(.fileNoSuchFile).informativeDescription != nil)
+    }
 }
