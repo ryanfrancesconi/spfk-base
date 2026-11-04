@@ -18,6 +18,12 @@ extension Error {
         return description
     }
 
+    /// What the error says, to show after a headline: its description, or only the domain and code
+    /// when the description is Foundation's fallback.
+    public var messageDetail: String {
+        informativeDescription ?? fallbackCode ?? (self as NSError).localizedDescription
+    }
+
     /// `headline` followed by what the error says: its description on the next line, or only the
     /// parenthesized domain and code when the description is Foundation's fallback.
     public func message(headline: String) -> String {
@@ -25,11 +31,16 @@ extension Error {
             return headline + "\n" + informativeDescription
         }
 
+        guard let fallbackCode else { return headline }
+        return "\(headline) (\(fallbackCode))"
+    }
+
+    /// "<domain> error <code>", from the parentheses closing Foundation's fallback description.
+    private var fallbackCode: String? {
         let description = (self as NSError).localizedDescription
 
-        guard let open = description.lastIndex(of: "(") else { return headline }
+        guard let open = description.lastIndex(of: "(") else { return nil }
 
-        let code = description[open...].trimmingCharacters(in: CharacterSet(charactersIn: "().").union(.whitespaces))
-        return "\(headline) (\(code))"
+        return description[open...].trimmingCharacters(in: CharacterSet(charactersIn: "().").union(.whitespaces))
     }
 }

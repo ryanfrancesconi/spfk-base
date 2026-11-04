@@ -71,4 +71,10 @@ struct NSErrorTests {
         #expect(undescribed.hasPrefix("Couldn't load kick.wav ("))
         #expect(undescribed.hasSuffix("UndescribedError error 0)"))
     }
+
+    @Test("messageDetail is the description, or the domain and code from the fallback")
+    func messageDetail() {
+        #expect(NSError(description: "No audio could be decoded").messageDetail == "No audio could be decoded")
+        #expect(NSError(domain: NSOSStatusErrorDomain, code: -39).messageDetail == "OSStatus error -39")
+    }
 }
