@@ -1,30 +1,23 @@
 # SPFKBase
 [![Version](https://img.shields.io/github/v/tag/ryanfrancesconi/spfk-base)](https://github.com/ryanfrancesconi/spfk-base/tags)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fryanfrancesconi%2Fspfk-base%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ryanfrancesconi/spfk-base)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fryanfrancesconi%2Fspfk-base%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ryanfrancesconi/spfk-base)
+[![Swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fryanfrancesconi%2Fspfk-base%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ryanfrancesconi/spfk-base)
+[![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fryanfrancesconi%2Fspfk-base%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ryanfrancesconi/spfk-base)
 
-The floor of the Spongefork packages. Every other package reaches it, directly or transitively, and
-nothing uses it on its own.
+Foundation and standard library extensions shared by the Spongefork packages.
 
-It holds what any layer might need and that knows nothing about a domain or a screen: Foundation and
-standard-library extensions, logging, small value types shared by audio, image and video work,
-cooperative stopping and progress reporting for parse passes, running a child process, and catching
-Objective-C exceptions from Swift through its companion C module.
+## Features
 
-## Scope
+- Logging (`Log`)
+- Small value types shared by audio, image and video code
+- Cooperative stopping (`ParseStopSignal`) and progress reporting for parse passes
+- Running a child process (`ProcessRunner`)
+- Catching Objective-C exceptions from Swift (`ExceptionTrap`)
 
-spfk-base is Foundation-level and imports no AppKit. A utility that needs AppKit, the file system
-layer or image decoding belongs in spfk-utils, which sits above it. A type comes down here only when
-packages that cannot depend on each other both need it; audio vocabulary belongs in spfk-audio-base,
-time in spfk-time.
+## Notes
 
-## Constraints
-
-Debug logging is gated at runtime by `Log.buildConfig`, which the app sets at launch. It defaults to
-debug, so an app that never sets it logs debug output in a release build.
-
-A parse pass is stopped through `ParseStopSignal`, not by cancelling its task: cancelling in the
-middle of an `AVAsset` load leaks the continuation behind it.
+- `Log.buildConfig` defaults to `.debug`. Set it at launch, or a release build logs debug output.
+- Stop a parse pass with `ParseStopSignal` rather than cancelling its task. Cancelling during an
+  `AVAsset` load leaks the continuation behind it.
 
 ## About
 
