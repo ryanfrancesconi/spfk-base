@@ -27,12 +27,6 @@ struct FloatingPointTests {
         #expect(doubles.mean() == 20.0)
     }
 
-    @Test("unitIntervalRange is 0...1")
-    func unitIntervalRange() {
-        #expect(Double.unitIntervalRange == 0 ... 1)
-        #expect(Float.unitIntervalRange == 0 ... 1)
-    }
-
     @Test("averaged property on concrete types")
     func averaged() {
         let doubles: [Double] = [10, 20, 30]

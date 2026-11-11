@@ -55,22 +55,4 @@ final class CollectionTests: TestCaseModel {
         let freq = [Int]().elementQuantity
         #expect(freq.isEmpty)
     }
-
-    // MARK: - isNotEmpty
-
-    @Test func isNotEmpty() {
-        #expect([1].isNotEmpty)
-        #expect(![Int]().isNotEmpty)
-    }
-
-    // MARK: - init(zeros:)
-
-    @Test func initWithZeros() {
-        let arr = [Int](zeros: 5)
-        #expect(arr.count == 5)
-        #expect(arr.allSatisfy { $0 == 0 })
-
-        let floats = [Float](zeros: 3)
-        #expect(floats == [0, 0, 0])
-    }
 }

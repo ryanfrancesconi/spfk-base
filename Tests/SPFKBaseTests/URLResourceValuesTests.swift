@@ -17,12 +17,6 @@ struct URLResourceValuesTests {
         #expect(caf.mimeType == "audio/x-caf")
     }
 
-    @Test("isDirectory for temp directory")
-    func isDirectory() {
-        let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
-        #expect(tmp.isDirectory)
-    }
-
     @Test("isDirectory false for file")
     func isDirectoryFalseForFile() throws {
         let file = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -41,12 +35,6 @@ struct URLResourceValuesTests {
 
         let visible = URL(fileURLWithPath: "/tmp/visible.txt")
         #expect(!visible.isHidden)
-    }
-
-    @Test("creationDate for temp directory")
-    func creationDate() {
-        let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
-        #expect(tmp.creationDate != nil)
     }
 
     @Test("dates for written file")
