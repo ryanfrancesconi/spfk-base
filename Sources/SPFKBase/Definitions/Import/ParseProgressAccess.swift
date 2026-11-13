@@ -27,8 +27,13 @@ public protocol ParseProgressAccess: AnyObject, Sendable {
 
     /// Called when parsing completes or throws, including on cancellation.
     func parseProgressFinish()
+
+    /// Called by the importer after the parse, while `count` parsed files go into the store and
+    /// the table.
+    func parseProgressAdding(count: Int)
 }
 
 extension ParseProgressAccess {
     public func parseProgressScanning(foundCount: Int) {}
+    public func parseProgressAdding(count: Int) {}
 }
