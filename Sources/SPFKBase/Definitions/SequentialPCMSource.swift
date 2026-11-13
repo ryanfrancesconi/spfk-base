@@ -4,7 +4,7 @@ import AVFAudio
 
 /// A sequential source of decoded PCM, for audio `AVAudioFile` cannot open.
 ///
-/// Exists for containers outside AVFoundation's set — Matroska is the one users hit, where
+/// Exists for containers outside AVFoundation's set - Matroska is the one users hit, where
 /// `AVAudioFile(forReading:)` throws `'fmt?'` and no amount of retrying helps. A demuxer plus a
 /// decoder can produce the samples; this is the shape a front-to-back consumer needs them in.
 ///

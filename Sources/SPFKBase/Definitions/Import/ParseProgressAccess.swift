@@ -5,7 +5,7 @@ import Foundation
 
 /// Abstract progress reporting protocol for file-parsing operations.
 ///
-/// Describes three lifecycle events — start, per-item update, and finish — without
+/// Describes three lifecycle events - start, per-item update, and finish - without
 /// any coupling to a specific UI presentation. Callers implement this protocol to
 /// receive progress and optionally wire cancellation.
 ///

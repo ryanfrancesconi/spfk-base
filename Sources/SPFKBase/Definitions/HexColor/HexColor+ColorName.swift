@@ -61,7 +61,7 @@ public enum ColorName: String, CaseIterable, Sendable {
 
 extension HexColor {
     /// A human-readable color region name derived from this color's HSB values.
-    /// Suitable for search indexing — e.g. "red", "blue", "gray".
+    /// Suitable for search indexing - e.g. "red", "blue", "gray".
     public var colorName: ColorName {
         let (h, s, b) = hsb
         return ColorName(hue: h, saturation: s, brightness: b)
@@ -75,7 +75,7 @@ extension HexColor {
     public var colorDisplayName: String {
         let (h, s, b) = hsb
 
-        // Achromatic — no qualifier needed, the name itself implies lightness
+        // Achromatic - no qualifier needed, the name itself implies lightness
         if b < 0.05 { return "Black" }
         if s < 0.1, b > 0.85 { return "White" }
         if s < 0.15 {

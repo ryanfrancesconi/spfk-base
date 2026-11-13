@@ -24,7 +24,7 @@
         }
 
         /// Defaults to `.general`. Pass a uniquely named board to keep a caller off the
-        /// machine-wide one, which every process on the system — and the user's own clipboard —
+        /// machine-wide one, which every process on the system - and the user's own clipboard -
         /// is contending for.
         ///
         /// Written under both the typed representation and `.string`, so a reader that knows the
@@ -43,8 +43,8 @@
         /// Reads the typed representation, falling back to `.string` only when the board carries no
         /// Spongefork payload at all.
         ///
-        /// Without that condition the fallback undoes the typing: a permissive decode — one whose
-        /// every field is optional — accepts another type's JSON and yields an empty instance,
+        /// Without that condition the fallback undoes the typing: a permissive decode - one whose
+        /// every field is optional - accepts another type's JSON and yields an empty instance,
         /// which is indistinguishable from a real one.
         public static func fromPasteboard<T: Serializable>(_ pasteboard: NSPasteboard = .general) throws -> T {
             if let json = pasteboard.string(forType: T.pasteboardType) {

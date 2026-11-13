@@ -57,7 +57,7 @@ public enum OrientationEdit: Int, Codable, Sendable, Hashable, CaseIterable {
 
     // MARK: - Composition
 
-    /// Clockwise quarter turns, 0–3, performed after the left-right mirror when ``isMirrored``.
+    /// Clockwise quarter turns, 0-3, performed after the left-right mirror when ``isMirrored``.
     public var quarterTurns: Int {
         switch self {
         case .up, .upMirrored: 0

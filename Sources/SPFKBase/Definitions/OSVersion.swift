@@ -4,7 +4,7 @@ import Foundation
 
 /// A minimum OS version, as a value.
 ///
-/// For branching on a *value* — a symbol name, a default, a size — from a table that maps entries
+/// For branching on a *value* - a symbol name, a default, a size - from a table that maps entries
 /// to the release each one needs. `#available` is a compile-time condition that cannot be stored
 /// or passed, so such a table cannot express its own check.
 ///
