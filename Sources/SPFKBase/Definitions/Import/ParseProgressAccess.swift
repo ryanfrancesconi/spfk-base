@@ -19,9 +19,16 @@ public protocol ParseProgressAccess: AnyObject, Sendable {
     ///   - cancellationHandler: Invoke this closure to cancel the in-progress parse.
     func parseProgressStart(itemCount: Int, cancellationHandler: (() -> Void)?)
 
+    /// Called during the folder scan, before any file is parsed.
+    func parseProgressScanning(foundCount: Int)
+
     /// Called once per successfully parsed file.
     func parseProgressUpdate(filename: String, progress: UnitInterval, cgImage: CGImage?)
 
     /// Called when parsing completes or throws, including on cancellation.
     func parseProgressFinish()
+}
+
+extension ParseProgressAccess {
+    public func parseProgressScanning(foundCount: Int) {}
 }
