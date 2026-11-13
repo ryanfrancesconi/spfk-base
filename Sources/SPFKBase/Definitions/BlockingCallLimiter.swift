@@ -12,7 +12,7 @@ import Foundation
 public actor BlockingCallLimiter {
     public static let shared = BlockingCallLimiter(width: max(1, ProcessInfo.processInfo.activeProcessorCount - 2))
 
-    public let width: Int
+    public nonisolated let width: Int
     private var running = 0
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
