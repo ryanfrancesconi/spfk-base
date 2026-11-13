@@ -19,5 +19,8 @@ public protocol SequentialPCMSource: AnyObject {
 
     /// Fills `buffer` with up to `frameCount` frames and returns how many were written. Returns 0
     /// once the source is exhausted; a short read that is not 0 does not mean the end.
-    func readNextChunk(into buffer: AVAudioPCMBuffer, frameCount: AVAudioFrameCount) throws -> AVAudioFrameCount
+    ///
+    /// `async` so a conformer whose decode blocks its thread can admit the call through
+    /// ``BlockingCallAdmission``. A conformer that reads inline may implement it synchronously.
+    func readNextChunk(into buffer: AVAudioPCMBuffer, frameCount: AVAudioFrameCount) async throws -> AVAudioFrameCount
 }
