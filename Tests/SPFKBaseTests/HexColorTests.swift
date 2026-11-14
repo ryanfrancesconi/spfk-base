@@ -41,6 +41,22 @@ class HexColorTests: TestCaseModel {
         #expect(hexColor.stringValue == "FF0000FF")
     }
 
+    @Test func repeatedParsesAgreeAndSpellingsNormalize() throws {
+        let first = try #require(HexColor(string: "#3366997F"))
+        let again = try #require(HexColor(string: "#3366997F"))
+        let other = try #require(HexColor(string: " 3366997f "))
+
+        for color in [again, other] {
+            #expect(color == first)
+            #expect(color.stringValue == "3366997F")
+            #expect(color.red == first.red && color.green == first.green)
+            #expect(color.blue == first.blue && color.alpha == first.alpha)
+        }
+
+        #expect(HexColor(string: "ZZZ") == nil)
+        #expect(HexColor(string: "ZZZ") == nil)
+    }
+
     @Test func initInvalidStringReturnsNil() {
         #expect(HexColor(string: "ZZZ") == nil)
         #expect(HexColor(string: "") == nil)

@@ -2,6 +2,7 @@
 
 import CoreGraphics
 import Foundation
+import os
 
 /// A lightweight, Codable color type that serializes as an 8-character RGBA hex string (e.g. `"FF000080"`).
 ///
@@ -93,10 +94,26 @@ public struct HexColor: Hashable, Sendable, Equatable, Comparable {
 
     /// Create from a hex string. Accepts 6-char RGB or 8-char RGBA, with or without `#` prefix.
     /// Returns `nil` if the string is not a valid hex color.
+    ///
+    /// Parsed once per distinct string: a library reads the same few colors for every row.
     public init?(string: String) {
+        if let parsed = Self.parsed.withLock({ $0[string] }) {
+            self = parsed
+            return
+        }
+
         stringValue = string.trimmed
         guard parse() else { return nil }
+
+        let parsed = self
+        Self.parsed.withLock { cache in
+            if cache.count >= Self.parsedLimit { cache.removeAll(keepingCapacity: true) }
+            cache[string] = parsed
+        }
     }
+
+    private static let parsed = OSAllocatedUnfairLock(initialState: [String: HexColor]())
+    private static let parsedLimit = 1024
 
     /// Create from RGBA component values (0-1 range, clamped).
     public init(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1) {
