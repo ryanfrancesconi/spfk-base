@@ -8,7 +8,7 @@ import Foundation
 /// The kept region is a rectangle of `width × W` by `height × H` pixels for a `W × H` image, centered
 /// at the offset center and turned by ``straighten`` about its own center. Because the two fractions
 /// are of different lengths, every rotation is computed in pixels.
-public struct CropEdit: Codable, Sendable, Hashable {
+public struct CropEdit: Sendable, Hashable {
     /// The kept rectangle's center, as an offset from the image's center in fractions of the displayed
     /// width and height; right and down are positive.
     public var centerX: Double
@@ -24,13 +24,20 @@ public struct CropEdit: Codable, Sendable, Hashable {
     /// The constraint the user chose. Not geometry: ``isIdentity`` ignores it.
     public var aspect: CropAspect
 
+    /// The ``CropAspect/custom`` ratio as entered, as shown: after the pending orientation. 0 is unset.
+    /// Not geometry, like ``aspect``.
+    public var customWidth: Double
+    public var customHeight: Double
+
     public init(
         centerX: Double = 0,
         centerY: Double = 0,
         width: Double = 1,
         height: Double = 1,
         straighten: Double = 0,
-        aspect: CropAspect = .freeform
+        aspect: CropAspect = .freeform,
+        customWidth: Double = 0,
+        customHeight: Double = 0
     ) {
         self.centerX = Self.sanitize(centerX, default: 0, in: Self.centerRange)
         self.centerY = Self.sanitize(centerY, default: 0, in: Self.centerRange)
@@ -38,11 +45,19 @@ public struct CropEdit: Codable, Sendable, Hashable {
         self.height = Self.sanitize(height, default: 1, in: Self.sizeRange)
         self.straighten = Self.sanitize(straighten, default: 0, in: Self.straightenRange)
         self.aspect = aspect
+        self.customWidth = Self.sanitize(customWidth, default: 0, in: Self.customRange)
+        self.customHeight = Self.sanitize(customHeight, default: 0, in: Self.customRange)
     }
 
     public static let centerRange: ClosedRange<Double> = -0.5 ... 0.5
     public static let sizeRange: ClosedRange<Double> = 0.01 ... 1
     public static let straightenRange: ClosedRange<Double> = -45 ... 45
+    public static let customRange: ClosedRange<Double> = 0 ... 10000
+
+    /// Width over height as shown, when both custom sides are set.
+    public var customRatio: Double? {
+        customWidth > 0 && customHeight > 0 ? customWidth / customHeight : nil
+    }
 
     /// The whole picture, unturned.
     public var isIdentity: Bool {
@@ -51,7 +66,10 @@ public struct CropEdit: Codable, Sendable, Hashable {
 
     /// This value with each field clamped, as the initializer clamps it.
     public var sanitized: Self {
-        Self(centerX: centerX, centerY: centerY, width: width, height: height, straighten: straighten, aspect: aspect)
+        Self(
+            centerX: centerX, centerY: centerY, width: width, height: height, straighten: straighten,
+            aspect: aspect, customWidth: customWidth, customHeight: customHeight
+        )
     }
 
     private static func sanitize(_ value: Double, default fallback: Double, in range: ClosedRange<Double>) -> Double {
@@ -136,16 +154,18 @@ public struct CropEdit: Codable, Sendable, Hashable {
 
     /// The largest centered crop of `aspect` for an image displayed `displayedWidth × displayedHeight`
     /// before `pendingOrientation`. The ratio follows the picture as shown, the pending orientation
-    /// included: a landscape picture gets 16:9, a portrait one 9:16. `.original` and `.freeform` keep
-    /// the picture's own shape.
+    /// included: a landscape picture gets 16:9, a portrait one 9:16, and `swapped` gives the other.
+    /// `.original`, `.freeform` and `.custom` keep the picture's own shape, or its inverse when `swapped`;
+    /// a custom ratio is ``CropEdit/applyingAspect(_:swapped:displayedWidth:displayedHeight:orientation:)``'s.
     public static func cropping(
         to aspect: CropAspect,
         displayedWidth: Int,
         displayedHeight: Int,
         pendingOrientation: OrientationEdit = .up,
-        straighten: Double = 0
+        straighten: Double = 0,
+        swapped: Bool = false
     ) -> CropEdit {
-        let ratio: Double
+        var ratio: Double
 
         if let landscape = aspect.landscapeRatio {
             let swaps = pendingOrientation.swapsDimensions
@@ -155,6 +175,10 @@ public struct CropEdit: Codable, Sendable, Hashable {
             ratio = swaps ? 1 / shown : shown
         } else {
             ratio = displayedHeight > 0 ? Double(displayedWidth) / Double(displayedHeight) : 1
+        }
+
+        if swapped {
+            ratio = 1 / ratio
         }
 
         var result = largestCentered(aspect: ratio, imageWidth: displayedWidth, imageHeight: displayedHeight, straighten: straighten)
@@ -174,11 +198,13 @@ public enum CropAspect: String, Codable, Sendable, CaseIterable {
     case ratio4x3
     case ratio3x5
     case ratio3x2
+    /// The ratio in ``CropEdit/customWidth`` and ``CropEdit/customHeight``.
+    case custom
 
-    /// Width over height with the longer side horizontal; nil for ``freeform`` and ``original``.
+    /// Width over height with the longer side horizontal; nil for ``freeform``, ``original`` and ``custom``.
     public var landscapeRatio: Double? {
         switch self {
-        case .freeform, .original: nil
+        case .freeform, .original, .custom: nil
         case .square: 1
         case .ratio16x9: 16.0 / 9
         case .ratio4x5: 5.0 / 4
@@ -187,5 +213,29 @@ public enum CropAspect: String, Codable, Sendable, CaseIterable {
         case .ratio3x5: 5.0 / 3
         case .ratio3x2: 3.0 / 2
         }
+    }
+}
+
+// MARK: - Codable
+
+extension CropEdit: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case centerX, centerY, width, height, straighten, aspect, customWidth, customHeight
+    }
+
+    /// A missing custom side reads as unset, so data written before it existed still reads.
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.init(
+            centerX: try c.decode(Double.self, forKey: .centerX),
+            centerY: try c.decode(Double.self, forKey: .centerY),
+            width: try c.decode(Double.self, forKey: .width),
+            height: try c.decode(Double.self, forKey: .height),
+            straighten: try c.decode(Double.self, forKey: .straighten),
+            aspect: try c.decode(CropAspect.self, forKey: .aspect),
+            customWidth: try c.decodeIfPresent(Double.self, forKey: .customWidth) ?? 0,
+            customHeight: try c.decodeIfPresent(Double.self, forKey: .customHeight) ?? 0
+        )
     }
 }
