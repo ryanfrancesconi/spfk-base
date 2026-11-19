@@ -21,6 +21,10 @@ public struct ProductErrorVocabulary: Sendable {
     public let combinedViewNotStored: String
     /// A command that needs an open item, with none open.
     public let nothingLoaded: String
+    /// The title of a library save that failed.
+    public let librarySaveFailed: String
+    /// The title of a library that can no longer be written to.
+    public let libraryDamaged: String
 
     /// The running product's wording. Set once at launch, before any window is built.
     public nonisolated(unsafe) static var current: ProductErrorVocabulary?
@@ -35,7 +39,9 @@ public struct ProductErrorVocabulary: Sendable {
         containerNotSupported: @escaping @Sendable (_ title: String) -> String,
         itemHasNoContainer: @escaping @Sendable (_ title: String) -> String,
         combinedViewNotStored: String,
-        nothingLoaded: String
+        nothingLoaded: String,
+        librarySaveFailed: String,
+        libraryDamaged: String
     ) {
         self.itemNotFound = itemNotFound
         self.itemNotFoundNamed = itemNotFoundNamed
@@ -47,5 +53,7 @@ public struct ProductErrorVocabulary: Sendable {
         self.itemHasNoContainer = itemHasNoContainer
         self.combinedViewNotStored = combinedViewNotStored
         self.nothingLoaded = nothingLoaded
+        self.librarySaveFailed = librarySaveFailed
+        self.libraryDamaged = libraryDamaged
     }
 }
