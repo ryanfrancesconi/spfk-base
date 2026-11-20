@@ -92,3 +92,17 @@ struct CropEditOrientationTests {
         #expect(size == plainSize)
     }
 }
+
+extension CropEditOrientationTests {
+    @Test(arguments: OrientationEdit.allCases, crops)
+    func orientingUndoesUnorienting(tag: OrientationEdit, crop: CropEdit) {
+        let back = crop.unoriented(fileOrientation: tag.rawValue).oriented(fileOrientation: tag.rawValue)
+
+        #expect(abs(back.centerX - crop.centerX) < 1e-12)
+        #expect(abs(back.centerY - crop.centerY) < 1e-12)
+        #expect(back.width == crop.width)
+        #expect(back.height == crop.height)
+        #expect(back.straighten == crop.straighten)
+        #expect(back.aspect == crop.aspect)
+    }
+}
