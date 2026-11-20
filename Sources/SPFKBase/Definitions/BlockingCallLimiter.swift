@@ -20,9 +20,9 @@ public actor BlockingCallLimiter {
         self.width = max(1, width)
     }
 
-    /// Runs `body` on the caller's thread once a slot is free. `body` is synchronous, so it cannot wait
-    /// on a second slot while holding one.
-    public nonisolated func run<T>(_ body: () throws -> T) async rethrows -> T {
+    /// Runs `body` on the caller's isolation once a slot is free. `body` is synchronous, so it cannot wait
+    /// on a second slot while holding one. Never call it from the main actor: `body` would block it.
+    public nonisolated(nonsending) func run<T>(_ body: () throws -> T) async rethrows -> T {
         await acquire()
 
         do {
